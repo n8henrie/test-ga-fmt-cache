@@ -1,0 +1,19 @@
+name: CI
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/cache@main
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --all-targets --features=modulo,vendored-tls -- --deny warnings
+      - run: |
+          cargo build --release
+          cargo run --release
